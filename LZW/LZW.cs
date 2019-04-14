@@ -12,41 +12,72 @@ namespace task_LZW
             var dict = new Dictionary<string, int>();
             for (int i = 0; i < 256; i++)
             {
-                    dict.Add(new string((char)i, 1), i);
+                dict.Add(new string((char) i, 1), i);
             }
-                       
+
             var outArray = new List<int>();
-
             var w = "";
-
             foreach (var c in data)
             {
-                var wc = w + new string((char)c, 1);
-                if (dict.ContainsKey(wc.ToString()))
-                {
+                var wc = w + new string((char) c, 1);
+                if (dict.ContainsKey(wc))
                     w = wc;
-                }
                 else
                 {
                     outArray.Add(dict[w]);
                     dict.Add(wc, dict.Count);
-
-                    w = new string((char)c, 1);
+                    w = new string((char) c, 1);
                 }
             }
 
             if (w.Length != 0)
-            {
-                outArray.Add(dict[w.ToString()]);
-            }
-
+                outArray.Add(dict[w]);
 
             return outArray.ToArray();
         }
 
         private static byte[] LZWtoData(int[] lzw)
         {
+            var dict = new Dictionary<int, List<byte>>();
+            for (int i = 0; i < 256; i++)
+            {
+                dict.Add(i, new List<byte> {(byte) i});
+            }
 
+            var window = dict[lzw[0]];
+            var outArray = new List<byte>(window);
+
+            foreach (var i in lzw.Skip(1))
+            {
+                var entry = new List<byte>();
+
+                if (dict.ContainsKey(i))
+                {
+                    entry.AddRange(dict[i]);
+                }
+
+                else
+                {
+                    if (i == dict.Count)
+                    {
+                        entry.AddRange(window);
+                        entry.Add(window[0]);
+                    }
+                }
+
+                if (entry.Count > 0)
+                {
+                    outArray.AddRange(entry);
+
+                    window.Add(entry[0]);// b ab. Мы должны добавить ba в словарь
+                    dict.Add(dict.Count, new List<byte>(window));
+
+                    window = entry;
+                }
+            }
+
+
+            return outArray.ToArray();
         }
 
         public static byte[] Compress(byte[] data)
