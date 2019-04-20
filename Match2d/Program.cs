@@ -10,7 +10,7 @@ namespace task_Match2d
 		{
 			matrix = Enumerable.Range(0, 100).Select(_ => Enumerable.Range(0,100)
 						.Select(__ => rand.Next() % 3).ToArray()).ToArray();
-			pattern = Enumerable.Range(0, 9).Select(_ => Enumerable.Range(0, 9)
+			pattern = Enumerable.Range(0, 10).Select(_ => Enumerable.Range(0, 10)
 						.Select(__ => rand.Next() % 3).ToArray()).ToArray();
 			for (int occNum = rand.Next() % 20; occNum >= 0; occNum--)
 			{
