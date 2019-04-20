@@ -46,27 +46,39 @@ namespace task_Match2d
                 }
             }
 
-            Console.WriteLine("OK");
         }
 
         public AhoCorasick(IEnumerable<IList<TChar>> strings, out List<int> stringIds)
         {
-            var set = new HashSet<string>();
+            var dict = new Dictionary<string, int>();
             var index = 1;
             stringIds = new List<int>();
             foreach (var item in strings)
             {
-                if(!set.Contains(String.Concat(item)))
+                if (!dict.ContainsKey(string.Concat(item)))
                 {
-                    AddString(item, index);
-                    set.Add(String.Concat(item));
+                    AddString((IList<TChar>) item.ToList(), index);
+                    dict.Add(String.Concat(item), index);
+                    stringIds.Add(index);
                     index++;
+                }
+                else
+                {
+                    stringIds.Add(dict[string.Concat(item)]);
                 }
             }
 
             BuildLinks();
 
 
+            //stringIds будет содержать id для строк strings, равным строкам равные id
+//            throw new NotImplementedException();
+        }
+
+        public AhoCorasick(IList<TChar> str)
+        {
+            AddString(str, 1);
+            BuildLinks();
             //stringIds будет содержать id для строк strings, равным строкам равные id
 //            throw new NotImplementedException();
         }
@@ -98,7 +110,6 @@ namespace task_Match2d
                 }
             }
 
-            Console.WriteLine("OK");
             return res;
         }
 
@@ -121,6 +132,7 @@ namespace task_Match2d
 
                 v = v.next[c];
             }
+
             v.mark = true;
             v.strId = strId;
         }

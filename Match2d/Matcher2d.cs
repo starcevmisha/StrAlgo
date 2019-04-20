@@ -20,7 +20,64 @@ namespace task_Match2d
 
             //Используя Ахо-Корасик, реализуйте поиск двумерных паттернов за O((pq + mn)log s)
 
-            return result;
+//            foreach (var str in matrix)
+//            {
+//                Console.WriteLine(String.Concat(str));
+//            }
+//            
+//            foreach (var str in pattern)
+//            {
+//                Console.WriteLine(String.Concat(str));
+//            }
+            
+            var resMatrix = new int[n,m];
+            Action<int, int> reportAction = (position, strId) => resMatrix[position/(n+1),position%(n+1)]=strId;
+
+            var strPatterns = pattern.Select(pat => String.Concat(pat).ToList()).ToList();
+
+            var strMatrix = "";
+            foreach (var str in matrix)
+            {
+                strMatrix += String.Concat(str);
+                strMatrix += "$";
+            }
+            
+            var ahoCorasick = new AhoCorasick<char>(strPatterns, out var stringIds);
+            ahoCorasick.ReportOccurrencesIds(strMatrix, reportAction);
+
+
+//            for (int i = 0; i < n; i++)
+//            {
+//                for (int j = 0; j < m; j++)
+//                {
+//                    Console.Write(resMatrix[i, j]);
+//                }
+//
+//                Console.WriteLine();
+//            }
+//            
+            var resultTuples = new List<Tuple<int, int>>();
+            
+            
+            var columns = "";
+            for (int i = 0; i < n; i++)
+            {
+                var column = String.Concat(Enumerable.Range(0, resMatrix.GetLength(0))
+                        .Select(x => resMatrix[x, i]))
+                    .ToList();
+               
+                columns += String.Concat(column);
+                columns += "$";
+            }
+            
+            var ahoCorasickForFindAnswer = new AhoCorasick<char>(String.Concat(stringIds).ToList());
+                ahoCorasickForFindAnswer.ReportOccurrencesIds(columns, 
+                    (position, strId) 
+                        => resultTuples.Add(Tuple.Create( position%(n+1), position/(n+1)))/*Console.WriteLine($"{position/(n+1)},{position%(n+1)}")*/);
+            
+            
+            
+            return resultTuples;
         }
 
         public static List<Tuple<int, int>> NaivePatternMatches<TChar>(

@@ -39,6 +39,7 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="AhoCorasick.cs" />
+        <Compile Include="ArrayExtensions.cs" />
         <Compile Include="Matcher2d.cs" />
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
