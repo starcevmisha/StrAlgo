@@ -50,70 +50,21 @@ namespace task_Match2d
 
         public AhoCorasick(IEnumerable<IList<TChar>> strings, out List<int> stringIds)
         {
-            var dict = new Dictionary<string, int>();
-            var index = 1;
             stringIds = new List<int>();
             foreach (var item in strings)
             {
-                if (!dict.ContainsKey(string.Concat(item)))
-                {
-                    AddString(item.ToList(), index);
-                    dict.Add(String.Concat(item), index);
-                    stringIds.Add(index);
-                    index++;
-                }
-                else
-                {
-                    stringIds.Add(dict[string.Concat(item)]);
-                }
+                AddString(item, out var index);
+                stringIds.Add(index);
             }
 
             BuildLinks();
-
-
-            //stringIds будет содержать id для строк strings, равным строкам равные id
-//            throw new NotImplementedException();
-        }
-
-        public AhoCorasick(IList<TChar> str)
-        {
-            AddString(str, 1);
-            BuildLinks();
-            //stringIds будет содержать id для строк strings, равным строкам равные id
-//            throw new NotImplementedException();
         }
 
 
         private Vertex<TChar> root = new Vertex<TChar> {next = new Dictionary<TChar, Vertex<TChar>>()};
+        private int nextIndex = 1;
 
-        public IEnumerable<int> Find(IEnumerable<TChar> text)
-        {
-            var res = new List<int>();
-            var node = root;
-            var i = 0;
-            foreach (TChar c in text)
-            {
-                i++;
-                while (node != root && !node.next.ContainsKey(c))
-                {
-                    node = node.link;
-                }
-
-                if (!node.next.TryGetValue(c, out node))
-                    node = root;
-
-
-                for (var u = node; u != root; u = u.report)
-                {
-                    if (u.mark)
-                        res.Add(i - u.len);
-                }
-            }
-
-            return res;
-        }
-
-        private void AddString(IList<TChar> s, int strId)
+        private void AddString(IList<TChar> s, out int strId)
         {
             var v = root;
             foreach (var c in s)
@@ -133,8 +84,17 @@ namespace task_Match2d
                 v = v.next[c];
             }
 
-            v.mark = true;
-            v.strId = strId;
+            if (v.mark)
+            {
+                strId = v.strId;
+            }
+            else
+            {
+                v.mark = true;
+                v.strId = nextIndex;
+                strId = v.strId;
+                nextIndex++;
+            }
         }
 
         private void BuildLinks()

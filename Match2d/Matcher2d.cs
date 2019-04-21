@@ -23,7 +23,7 @@ namespace task_Match2d
             //Сотсавляем матрицу вхождений
             var resMatrix = new int[n, m];
             var ahoCorasick = new AhoCorasick<TChar>(pattern, out var stringIds);
-            for (var i = 0; i < n; i++)
+            for (int i = 0; i < n; i++)
             {
                 var str = matrix[i];
                 ahoCorasick.ReportOccurrencesIds(str,
@@ -32,7 +32,7 @@ namespace task_Match2d
 
 
             //По матрице вхождений ищем вхождения
-            var ahoCorasickForFindAnswer = new AhoCorasick<int>(stringIds);
+            var ahoCorasickForFindAnswer = new AhoCorasick<int>(new List<List<int>>{stringIds}, out var _);
             for (int i = 0; i < n; i++)
             {
                 var column = Enumerable.Range(0, resMatrix.GetLength(0))

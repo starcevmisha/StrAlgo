@@ -28,7 +28,7 @@ namespace task_Match2d
 //
 //
 ////			
-//			var patterns = new List<List<char>> { "bc".ToList(), "ef".ToList()};
+//			var patterns = new List<List<char>> { "bc".ToList(), "ef".ToList(), "bc".ToList()};
 //			var ahoCorasick = new AhoCorasick<char>(patterns, out var stringIds);
 ////			var res = ahoCorasick.Find("abc$def$ghi");
 //			ahoCorasick.ReportOccurrencesIds("abc$def$efe", reportAction);
