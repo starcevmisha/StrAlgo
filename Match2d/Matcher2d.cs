@@ -20,62 +20,30 @@ namespace task_Match2d
 
             //Используя Ахо-Корасик, реализуйте поиск двумерных паттернов за O((pq + mn)log s)
 
-//            foreach (var str in matrix)
-//            {
-//                Console.WriteLine(String.Concat(str));
-//            }
-//            
-//            foreach (var str in pattern)
-//            {
-//                Console.WriteLine(String.Concat(str));
-//            }
-
+            //Сотсавляем матрицу вхождений
             var resMatrix = new int[n, m];
-            Action<int, int> reportAction =
-                (position, strId) => resMatrix[position / (n + 1), position % (n + 1)] = strId;
-
-            var strPatterns = pattern.Select(pat => String.Concat(pat).ToList()).ToList();
-
-            var strMatrix = "";
-            foreach (var str in matrix)
+            var ahoCorasick = new AhoCorasick<TChar>(pattern, out var stringIds);
+            for (var i = 0; i < n; i++)
             {
-                strMatrix += String.Concat(str);
-                strMatrix += "$";
+                var str = matrix[i];
+                ahoCorasick.ReportOccurrencesIds(str,
+                    (position, strId) => resMatrix[i, position] = strId);
             }
 
-            var ahoCorasick = new AhoCorasick<char>(strPatterns, out var stringIds);
-            ahoCorasick.ReportOccurrencesIds(strMatrix, reportAction);
 
-
-//            for (int i = 0; i < n; i++)
-//            {
-//                for (int j = 0; j < m; j++)
-//                {
-//                    Console.Write(resMatrix[i, j]);
-//                }
-//
-//                Console.WriteLine();
-//            }
-//            
-
-
-
-            var columns = new List<int>();
+            //По матрице вхождений ищем вхождения
+            var ahoCorasickForFindAnswer = new AhoCorasick<int>(stringIds);
             for (int i = 0; i < n; i++)
             {
                 var column = Enumerable.Range(0, resMatrix.GetLength(0))
                     .Select(x => resMatrix[x, i])
                     .ToList();
 
-                columns.AddRange(column);
-                columns.Add(int.MaxValue);
+                var i1 = i;
+                ahoCorasickForFindAnswer.ReportOccurrencesIds(column,
+                    (position, strId)
+                        => resultTuples.Add(Tuple.Create(position, i1)));
             }
-
-            var ahoCorasickForFindAnswer = new AhoCorasick<int>(stringIds);
-            ahoCorasickForFindAnswer.ReportOccurrencesIds(columns,
-                (position, strId)
-                    => resultTuples.Add(Tuple.Create(position % (n + 1), position / (n + 1))));
-
 
             return resultTuples;
         }

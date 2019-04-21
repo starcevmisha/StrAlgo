@@ -57,7 +57,7 @@ namespace task_Match2d
             {
                 if (!dict.ContainsKey(string.Concat(item)))
                 {
-                    AddString((IList<TChar>) item.ToList(), index);
+                    AddString(item.ToList(), index);
                     dict.Add(String.Concat(item), index);
                     stringIds.Add(index);
                     index++;
