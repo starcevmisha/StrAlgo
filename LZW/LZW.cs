@@ -67,7 +67,7 @@ namespace task_LZW
                 dict.Add(i, new List<byte> {(byte) i});
             }
 
-            var window = dict[lzw[0]];
+            var window = new List<byte>(dict[lzw[0]]);
             var outArray = new List<byte>(window);
 
             foreach (var i in lzw.Skip(1))
