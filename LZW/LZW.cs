@@ -5,32 +5,55 @@ using System.Text;
 
 namespace task_LZW
 {
+    class ListComparer : IComparer<List<byte>>
+    {
+        public int Compare(List<byte> x, List<byte> y)
+        {
+            var len = Math.Min(x.Count, y.Count);
+            for (var i = 0; i < len; i++)
+            {
+                var c = x[i].CompareTo(y[i]);
+                if (c != 0)
+                {
+                    return c;
+                }
+            }
+
+            return x.Count.CompareTo(y.Count);
+        }
+    }
+
     class LZW
     {
         private static int[] DataToLZW(byte[] data)
         {
-            var dict = new Dictionary<string, int>();
+            var dict = new SortedDictionary<List<byte>, int>(new ListComparer());
             for (int i = 0; i < 256; i++)
             {
-                dict.Add(new string((char) i, 1), i);
+                dict.Add(new List<byte> {(byte) i}, i);
             }
 
             var outArray = new List<int>();
-            var w = "";
+            var w = new List<byte>();
             foreach (var c in data)
             {
-                var wc = w + new string((char) c, 1);
+                var wc = new List<byte>(w) {c};
                 if (dict.ContainsKey(wc))
-                    w = wc;
+                {
+                    w.Clear();
+                    w.AddRange(wc);
+                }
                 else
                 {
                     outArray.Add(dict[w]);
                     dict.Add(wc, dict.Count);
-                    w = new string((char) c, 1);
+
+                    w.Clear();
+                    w.Add(c);
                 }
             }
 
-            if (w.Length != 0)
+            if (w.Count != 0)
                 outArray.Add(dict[w]);
 
             return outArray.ToArray();
@@ -50,26 +73,19 @@ namespace task_LZW
             foreach (var i in lzw.Skip(1))
             {
                 var entry = new List<byte>();
-
                 if (dict.ContainsKey(i))
-                {
                     entry.AddRange(dict[i]);
-                }
-
-                else
+                else if (i == dict.Count)
                 {
-                    if (i == dict.Count)
-                    {
-                        entry.AddRange(window);
-                        entry.Add(window[0]);
-                    }
+                    entry.AddRange(window);
+                    entry.Add(window[0]);
                 }
 
                 if (entry.Count > 0)
                 {
                     outArray.AddRange(entry);
 
-                    window.Add(entry[0]);// b ab. Мы должны добавить ba в словарь
+                    window.Add(entry[0]); // b ab. Мы должны добавить ba в словарь
                     dict.Add(dict.Count, new List<byte>(window));
 
                     window = entry;
