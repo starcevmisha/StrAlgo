@@ -15,24 +15,26 @@ namespace ZFunc
         }
         static void Main(string[] args)
         {
-            var text = "abababbbaaba".ToList();
-            var pattern = "aba".ToList();
-            Matcher.ZfunctionSearch(text, pattern);
-//            var rand = new Random();
-//            var pattern = new byte[100];
-//            var text = new byte[2000];
-//            int i;
-//            for (i = 0; i < 1000; i++)
-//            {
-//                rand.NextBytes(pattern);
-//                rand.NextBytes(text);
-//                if (!IsTestPassed(pattern, text))
-//                {
-//                    Console.WriteLine("TEST ERROR!");
-//                    return;
-//                }
-//            }
-//            Console.WriteLine("All random tests passed successfully");
+//            var c = Matcher.Zfunction("ab$ababababaabbba".ToList());
+//            var text = "abababa".ToList();
+//            var pattern = "a".ToList();
+//            Matcher.ZfunctionSearch(text, pattern);
+
+            var rand = new Random();
+            var pattern = new byte[100];
+            var text = new byte[2000];
+            int i;
+            for (i = 0; i < 1000; i++)
+            {
+                rand.NextBytes(pattern);
+                rand.NextBytes(text);
+                if (!IsTestPassed(pattern, text))
+                {
+                    Console.WriteLine("TEST ERROR!");
+                    return;
+                }
+            }
+            Console.WriteLine("All random tests passed successfully");
         }
     }
 }

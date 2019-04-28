@@ -10,12 +10,11 @@ namespace task_Zfunc
 		{
 			var m = pattern.Count;
 			var n = text.Count;
-			var prefixMatchCount = new int[m];
-			var z = Zfunction(pattern);
+//			var prefixMatchCount = new int[m];
 
 			//prefixOccurrences[i] = число вхождений pattern[0..i] в text
 			//Для сравнения TChar a и TChar b используйте Equal(a, b) (см. ниже)
-
+			var prefixMatchCount = ZfunctionPrefixCount(text, pattern);
 
 			return prefixMatchCount;
 		}
@@ -35,10 +34,51 @@ namespace task_Zfunc
 				prefixMatchCount[i] += prefixMatchCount[i + 1];
 			return prefixMatchCount;
 		}
-		private static bool Equal<TChar>(TChar a, TChar b)
+
+		public static int[] ZfunctionPrefixCount<TChar>(IList<TChar> str, IList<TChar> pattern)
 		{
-			return EqualityComparer<TChar>.Default.Equals(a, b);
+			var patternZFunc = Zfunction(pattern);
+			
+			var res = new int[patternZFunc.Length];
+			int rightBoundIdx = 0, rightBound = -1000;
+			
+			for (int i = 0; i < str.Count; i++)
+			{
+				var counter = 0;
+				if (i - rightBoundIdx == patternZFunc.Length || i + patternZFunc[i - rightBoundIdx] > rightBound)//Если мы выйдем за пределы
+				{
+					counter = Math.Max(0, rightBound - i + 1);
+					while (i + counter < str.Count && counter < pattern.Count &&
+					       Equal(pattern[counter], str[i + counter]))
+					{
+						counter++;
+					}
+				}
+				else//Если текущая позиция лежит внутри отрезка
+				{
+					counter = patternZFunc[i - rightBoundIdx];
+				}
+				if (i + counter - 1 >= rightBound)//Расширяем наш отразок совпадения
+				{
+					rightBoundIdx = i;
+					rightBound = i + counter - 1;
+				}
+
+				if (counter > 0)
+				{
+					res[counter - 1]++;
+				}
+			}
+
+			var aggr = 0;
+			for (var j = patternZFunc.Length-1; j >= 0; j--)
+			{
+				res[j] += aggr;
+				aggr = res[j];
+			}
+			return res;
 		}
+
 		public static int[] Zfunction<TChar>(IList<TChar> str)
 		{
 			var z = new int[str.Count];
@@ -64,39 +104,10 @@ namespace task_Zfunc
 			}
 			return z;
 		}
-		
-		public static void ZfunctionSearch<TChar>(IList<TChar> str, IList<TChar> pattern)
-		{
-			var patternZFunc = Zfunction(pattern);
-			var res = new int[patternZFunc.Length];
-			int rightBoundIdx = 0, rightBound = -1000;
-			
-			for (int i = 0; i < str.Count; i++)
-			{
-				var counter = 0;
-				if (i + patternZFunc[i - rightBoundIdx] > rightBound)//Если мы выйдем за пределы
-				{
-					counter = Math.Max(0, rightBound - i + 1);
-					while (i + counter < str.Count && counter < pattern.Count && Equal(pattern[counter], str[i + counter]))
-						counter++;
-				}
-				else//Если текущая позиция лежит внутри отрезка
-				{
-					counter = patternZFunc[i - rightBoundIdx];
-				}
-				if (i + counter - 1 >= rightBound)//Расширяем наш отразок совпадения
-				{
-					rightBoundIdx = i;
-					rightBound = i + counter - 1;
-				}
 
-				if (counter == pattern.Count)
-				{
-					Console.WriteLine(i);
-				}
-			}
-			return ;
+		private static bool Equal<TChar>(TChar a, TChar b)
+		{
+			return EqualityComparer<TChar>.Default.Equals(a, b);
 		}
-		
 	}
 }
