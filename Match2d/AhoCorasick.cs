@@ -21,7 +21,6 @@ namespace task_Match2d
 
     class AhoCorasick<TChar> where TChar : IComparable<TChar>
     {
-        public delegate void ReportAction(int endPosition, int id);
 
         public void ReportOccurrencesIds(IEnumerable<TChar> input, Action<int, int> reportAction)
         {

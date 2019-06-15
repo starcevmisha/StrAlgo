@@ -38,7 +38,7 @@ namespace DocsReport
 			Console.WriteLine(AreSame(got, expected) ? "Test passed" : "Test not passed");
 		}
 
-		static bool AreSame(List<DocumentOccurrences> got, Dictionary<string, int[]> expected)
+		public static bool AreSame(List<DocumentOccurrences> got, Dictionary<string, int[]> expected)
 		{
 			var comparisons = expected.OrderBy(kv => kv.Key)
 				.Zip(got.OrderBy(occs => occs.DocumentKey),
